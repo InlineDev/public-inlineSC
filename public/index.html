@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Inline Sync Core — Web3 API & Notifications</title>
+    <meta name="description"
+        content="Inline Sync Core — multi-chain Web3 API and notifications for Ethereum, Cosmos, TON and Bitcoin.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0d12;
+            --card: #121521;
+            --muted: #8b90a0;
+            --text: #e9ecf1;
+            --accent: #5a8cff;
+            --border: #1e2333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            line-height: 1.5
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none
+        }
+
+        .wrap {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 24px
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #5a8cff, #22c55e)
+        }
+
+        .title {
+            font-weight: 800;
+            font-size: 20px
+        }
+
+        .lang button {
+            background: #0e1220;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer
+        }
+
+        .lang button.active {
+            border-color: var(--accent)
+        }
+
+        .hero {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 8px
+        }
+
+        .hero p {
+            color: var(--muted);
+            margin-bottom: 20px
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: #0e1220;
+            color: var(--text)
+        }
+
+        .btn.primary {
+            background: var(--accent);
+            color: #fff;
+            border: none
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px
+        }
+
+        .plan h3 {
+            margin-bottom: 6px
+        }
+
+        .price {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px
+        }
+
+        ul {
+            list-style: disc;
+            padding-left: 18px;
+            color: var(--muted)
+        }
+
+        footer {
+            color: var(--muted);
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <div class="brand">
+                <div class="logo"></div>
+                <div class="title">Inline Sync Core</div>
+            </div>
+            <div class="lang">
+                <button data-lang="ru" class="active">RU</button>
+                <button data-lang="uk">UA</button>
+                <button data-lang="en">EN</button>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h1 id="h1">Мультичейн уведомления и API для Web3</h1>
+            <p id="desc">Следите за транзакциями в Ethereum, Cosmos, TON и Bitcoin через единый REST API и SDK.</p>
+            <a href="https://api.inline-sc.pro/docs/" target="_blank" class="btn primary" id="btnDocs">Документация</a>
+            <a href="https://t.me/inline_sync_core_bot" target="_blank" class="btn" id="btnBuy">Купить тариф</a>
+        </section>
+
+        <section class="panel">
+            <h2 id="plansTitle">Тарифы</h2>
+            <div id="plans" class="grid-3"></div>
+        </section>
+
+        <footer>
+            <div>© <span id="year"></span> Inline Sync Core</div>
+            <div><a href="https://api.inline-sc.pro/docs/" target="_blank">Документация</a> · <a
+                    href="https://t.me/inline_sync_core_bot" target="_blank">Telegram бот</a></div>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // ---------- тарифы ----------
+        const plans = {
+            basic: {
+                id: "basic", name: "Basic", description: "1 tracked address",
+                addressLimit: 1, dailyRequestLimit: 24,
+                notificationChannels: ["Email", "REST API"],
+                billing: { monthly: 0, quarterly: 0 }
+            },
+            plus: {
+                id: "plus", name: "Plus",
+                description: "Up to 5 tracked addresses with Telegram/email alerts and REST API history",
+                addressLimit: 5, dailyRequestLimit: 1000,
+                notificationChannels: ["Telegram", "Email", "REST API"],
+                billing: { monthly: 10, quarterly: 25 }
+            },
+            unlimited: {
+                id: "unlimited", name: "Unlimited",
+                description: "Unlimited tracked addresses with all notification channels and REST API history",
+                addressLimit: "∞", dailyRequestLimit: "∞",
+                notificationChannels: ["Telegram", "Email", "REST API"],
+                billing: { monthly: 25, quarterly: 70 }
+            }
+        };
+
+        function renderPlans(lang = "ru") {
+            const root = document.getElementById("plans");
+            root.innerHTML = "";
+            Object.values(plans).forEach(p => {
+                const div = document.createElement("div");
+                div.className = "plan panel";
+                const free = p.billing.monthly === 0;
+                const btnText = {
+                    ru: free ? "Начать бесплатно" : "Купить",
+                    uk: free ? "Почати безкоштовно" : "Придбати",
+                    en: free ? "Start Free" : "Buy Plan"
+                }[lang];
+                div.innerHTML = `
+        <h3>${p.name}</h3>
+        <p>${p.description}</p>
+        <div class="price">$${p.billing.monthly}/mo</div>
+        <ul>
+          <li>Адрес: ${p.addressLimit}</li>
+          <li>Запросов в день: ${p.dailyRequestLimit}</li>
+          <li>Каналы: ${p.notificationChannels.join(", ")}</li>
+        </ul>
+        <a class="btn ${free ? "" : "primary"}" href="https://t.me/inline_sync_core_bot" target="_blank">${btnText}</a>`;
+                root.appendChild(div);
+            });
+        }
+
+        // ---------- языки ----------
+        const texts = {
+            ru: { h1: "Мультичейн уведомления и API для Web3", desc: "Следите за транзакциями в Ethereum, Cosmos, TON и Bitcoin через единый REST API и SDK.", btnDocs: "Документация", btnBuy: "Купить тариф", plansTitle: "Тарифы" },
+            uk: { h1: "Мультичейн сповіщення та API для Web3", desc: "Відстежуйте транзакції в Ethereum, Cosmos, TON і Bitcoin через єдиний REST API та SDK.", btnDocs: "Документація", btnBuy: "Придбати тариф", plansTitle: "Тарифи" },
+            en: { h1: "Multi-chain Web3 Notifications & API", desc: "Track transactions across Ethereum, Cosmos, TON and Bitcoin via one REST API and SDK.", btnDocs: "Documentation", btnBuy: "Buy Plan", plansTitle: "Pricing Plans" }
+        };
+
+        function setLang(l) {
+            document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("active", b.dataset.lang === l));
+            const t = texts[l];
+            for (const k in t) {
+                const el = document.getElementById(k);
+                if (el) el.textContent = t[k];
+            }
+            renderPlans(l);
+        }
+
+        document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
+        setLang("ru");
+    </script>
+</body>
+
+</html>
