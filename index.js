@@ -12,5 +12,9 @@ app.get((_req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+app.get("/favicon.ico", (_req, res) => {
+    res.sendFile(path.join(__dirname, "public", "images", "logo.png"));
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Inline SC site running on http://localhost:${PORT}`));
